@@ -14,8 +14,8 @@ class ApplyFeature(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'text/plain'
         self.response.write(features.character_ngrams(text, n))
         self.response.write(read(''))
-'''
-class FilePage(webapp2.RequestHandler):
+
+class DocPage(webapp2.RequestHandler):
     def get(self):
         doc = self.request.get('doc')
         file_name = ''
@@ -23,9 +23,10 @@ class FilePage(webapp2.RequestHandler):
         contents = gcs_file.read()
         gcs_file.close()
         self.response.write(contents)
-'''
+
 
 app = webapp2.WSGIApplication([
     ('/', MainPage),
     ('/apply-feature', ApplyFeature),
+    ('/show-doc', DocPage),
 ], debug=True)
