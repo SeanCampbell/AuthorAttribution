@@ -18,7 +18,7 @@ class ApplyFeature(webapp2.RequestHandler):
 class DocPage(webapp2.RequestHandler):
     def get(self):
         doc = self.request.get('doc')
-        file_name = ''
+        file_name = 'author_files/Adams/Defense1.txt'
         gcs_file = gcs.open(file_name)
         contents = gcs_file.read()
         gcs_file.close()
