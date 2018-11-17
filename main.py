@@ -1,8 +1,22 @@
 import features
-from google.appengine.api import app_identity
 import lib.cloudstorage as gcs
 import os
 import webapp2
+
+from google.appengine.api import app_identity
+
+def read_gcs_file(file_path):
+    bucket_name = os.environ.get(
+        'BUCKET_NAME',
+        app_identity.get_default_gcs_bucket_name())
+    file_name = '/' + bucket_name + file_path
+    gcs_file = gcs.open(file_name)
+    contents = gcs_file.read()
+    gcs_file.close()
+    return contents
+
+def read_local_file(file_path):
+    return open(file_path).read()
 
 class MainPage(webapp2.RequestHandler):
     def get(self):
@@ -19,14 +33,9 @@ class ApplyFeature(webapp2.RequestHandler):
 
 class DocPage(webapp2.RequestHandler):
     def get(self):
-        bucket_name = os.environ.get(
-            'BUCKET_NAME',
-            app_identity.get_default_gcs_bucket_name())
         doc = self.request.get('doc')
-        file_name = '/' + bucket_name + '/author_files/Adams/Defense1.txt'
-        gcs_file = gcs.open(file_name)
-        contents = gcs_file.read()
-        gcs_file.close()
+        contents = read_gcs_file('/author_files/Adams/Defense1.txt')
+        #contents = read_local_file('author_files/Adams/Defense1.txt')
         self.response.write(contents)
 
 
