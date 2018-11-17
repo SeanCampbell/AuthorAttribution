@@ -15,6 +15,9 @@ def read_gcs_file(file_path):
     gcs_file.close()
     return contents
 
+# As far as I can tell, you can't read from GCS for an app running locally,
+# so this lets us switch easily between the two.
+# https://github.com/GoogleCloudPlatform/appengine-gcs-client/issues/54
 def read_local_file(file_path):
     return open(file_path).read()
 
