@@ -1,6 +1,8 @@
-import webapp2
 import features
-import cloudstorage as gcs
+from google.appengine.api import app_identity
+import lib.cloudstorage as gcs
+import os
+import webapp2
 
 class MainPage(webapp2.RequestHandler):
     def get(self):
@@ -17,8 +19,11 @@ class ApplyFeature(webapp2.RequestHandler):
 
 class DocPage(webapp2.RequestHandler):
     def get(self):
+        bucket_name = os.environ.get(
+            'BUCKET_NAME',
+            app_identity.get_default_gcs_bucket_name())
         doc = self.request.get('doc')
-        file_name = 'author_files/Adams/Defense1.txt'
+        file_name = '/' + bucket_name + '/author_files/Adams/Defense1.txt'
         gcs_file = gcs.open(file_name)
         contents = gcs_file.read()
         gcs_file.close()
