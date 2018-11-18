@@ -1,11 +1,13 @@
 import features
 #import lib.cloudstorage as gcs
+import keras
+import numpy as np
 import os
+import tensorflow as tf
 import webapp2
 
+from tensorflow.keras import layers
 #from google.appengine.api import app_identity
-import tensorflow
-import keras
 
 '''
 def read_gcs_file(file_path):
@@ -27,7 +29,7 @@ def read_local_file(file_path):
 class MainPage(webapp2.RequestHandler):
     def get(self):
         self.response.headers['Content-Type'] = 'text/plain'
-        self.response.write('New hello world again!')
+        self.response.write('Hello world again!')
 
 class ApplyFeature(webapp2.RequestHandler):
     def get(self):
@@ -44,11 +46,31 @@ class DocPage(webapp2.RequestHandler):
         contents = read_local_file('author_files/Adams/Defense1.txt')
         self.response.write(contents)
 
+class ClassifyPage(webapp2.RequestHandler):
+    def get(self):
+        data = np.random.random((1000, 32))
+        labels = np.random.random((1000, 10))
+
+        inputs = tf.keras.Input(shape=(32,))
+        x = layers.Dense(64, activation='relu')(inputs)
+        x = layers.Dense(64, activation='relu')(x)
+        predictions = layers.Dense(10, activation='softmax')(x)
+
+        model = tf.keras.Model(inputs=inputs, outputs=predictions)
+        model.compile(optimizer=tf.train.RMSPropOptimizer(0.001),
+                        loss='categorical_crossentropy',
+                        metrics=['accuracy'])
+        model.fit(data, labels, batch_size=32, epochs=5)
+        loss, acc = model.evaluate(data, labels)
+
+        self.response.write('loss = %.2f, acc = %.2f' % (loss, acc))
+
 
 app = webapp2.WSGIApplication([
     ('/', MainPage),
     ('/apply-feature', ApplyFeature),
     ('/show-doc', DocPage),
+    ('/classify', ClassifyPage),
 ], debug=True)
 
 def main():
